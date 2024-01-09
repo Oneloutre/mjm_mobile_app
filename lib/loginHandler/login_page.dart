@@ -15,59 +15,73 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Page de Connexion'),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Nom d\'utilisateur',
-                border: OutlineInputBorder(),
-              ),
+            const Image(
+              image: AssetImage('assets/banner.png'),
+              alignment: Alignment.center,
+              height: 123,
+
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Mot de passe',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            const SizedBox(height: 100),
+            Flex(
+              direction: Axis.vertical,
               children: [
-                Checkbox(
-                  value: _isConnected,
-                  onChanged: (value) {
-                    setState(() {
-                      _isConnected = value!;
-                    });
-                  },
+                TextField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nom d\'utilisateur',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
-                const Text('Rester connecté'),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                bool connected = await _submitForm();
-                if (connected) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => const HomePage(),
-                      ),
-                    );
-                  });
-                }
-              },
-                    child: const Text('Se Connecter'),
-            ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Mot de passe',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      value: _isConnected,
+                      onChanged: (value) {
+                        setState(() {
+                          _isConnected = value!;
+                        });
+                      },
+                    ),
+                    const Text('Rester connecté'),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () async {
+                    bool connected = await _submitForm();
+                    if (connected) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => const HomePage(),
+                          ),
+                        );
+                      });
+                    }
+                  },
+                  child: const Text('Se Connecter'),
+                ),
+              ]
+            )
+
           ],
         ),
       ),
