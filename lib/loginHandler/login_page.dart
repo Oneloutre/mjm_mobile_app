@@ -1,140 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../pages/home_page.dart' as home;
 import 'connection.dart' as connection;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'app_state.dart';
-import '../main.dart' as main;
-
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _isConnected = false;
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Page de Connexion'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Image(
-              image: AssetImage('assets/banner.png'),
-              alignment: Alignment.center,
-              height: 123,
-
-            ),
-            const SizedBox(height: 100),
-            Flex(
-              direction: Axis.vertical,
-              children: [
-                TextField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nom d\'utilisateur',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Mot de passe',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Checkbox(
-                      value: _isConnected,
-                      onChanged: (value) {
-                        setState(() {
-                          _isConnected = value!;
-                        });
-                      },
-                    ),
-                    const Text('Rester connecté'),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () async {
-                    bool connected = await _submitForm();
-                    if (connected) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (BuildContext context) => const HomePage(),
-                          ),
-                        );
-                      });
-                    }
-                  },
-                  child: const Text('Se Connecter'),
-                ),
-              ]
-            )
-
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<bool> _submitForm() async {
-    String username = _usernameController.text;
-    String password = _passwordController.text;
-
-    if (_isConnected) {
-      // Si la case est cochée, sauvegardez les identifiants de manière sécurisée
-      await _saveCredentials(username, password);
-    }
-
-    // Ajoutez ici la logique de redirection ou traitement après la connexion
-    bool connected = await connection.authentication(username, password);
-
-    if (connected) {
-      _saveCredentials(username, password);
-      await AppState.setAuthenticated(true);
-    } else {
-      // Affichez un message d'erreur si la connexion échoue
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Erreur de connexion'),
-            content: const Text('Nom d\'utilisateur ou mot de passe incorrect.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  // Utilisez WidgetsBinding pour obtenir le contexte de la racine de l'application
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Navigator.of(context).pop();
-                  });
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-
-    return connected;
-  }
-
-  Future<void> _saveCredentials(String username, String password) async {
-    await _secureStorage.write(key: 'username', value: username);
-    await _secureStorage.write(key: 'password', value: password);
-  }
-}
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -143,36 +10,79 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final bool _rememberMe = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: const Text('Connexion'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Vous êtes bien connecté !',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const main.HomePage(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                width: 350, // Définir la largeur souhaitée du TextField
+                child: TextField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nom d\'utilisateur',
+                    border: OutlineInputBorder(),
                   ),
-                );
-              },
-              child: const Text('Recharger la Page'),
-            ),
-          ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 350, // Définir la largeur souhaitée du TextField
+                child: TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Mot de passe',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                child: const Text('Se connecter'),
+                onPressed: () async {
+                  String username = _usernameController.text;
+                  String password = _passwordController.text;
+
+                  var connected = await connection.authentication(username, password);
+
+                  if (connected == true) {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.setString('username', username);
+                    prefs.setBool('_isLoggedIn', true);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const home.HomePage()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Nom d\'utilisateur ou mot de passe incorrect'),
+                      ),
+                    );
+                  }
+
+                  if (_rememberMe) {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.setString('username', username);
+                    prefs.setString('password', password);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
