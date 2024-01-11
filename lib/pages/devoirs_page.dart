@@ -18,6 +18,7 @@ class _DevoirsPageState extends State<DevoirsPage> {
           children: <Widget>[
             Text(
               'Devoirs',
+              style: TextStyle(fontSize: 50),
             ),
           ],
         ),

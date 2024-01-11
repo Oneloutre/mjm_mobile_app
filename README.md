@@ -1,16 +1,16 @@
-# mjm_app
+# MJM Graphics Design School Mobile App
 
-A brand-new mobile app for MJM Graphics Design School
+# MAYBE I'LL TAKE THE TIME TO MAKE A PROPER README LATER
 
-## Getting Started
+## Description
 
-This project is a starting point for a Flutter application.
+This is a mobile app for MJM Graphics Design School. It is a hybrid app built with Ionic 3 and Angular 5. It is a simple app that displays information about the school and allows users to contact the school via email or phone.
 
-A few resources to get you started if this is your first Flutter project:
+## Installation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. download the apk file from the root directory of this repository
+2. install the apk file on your android device
+3. run the app
+4. enjoy!
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Usage
