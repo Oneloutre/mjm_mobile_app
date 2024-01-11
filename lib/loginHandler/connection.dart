@@ -2,6 +2,14 @@ import 'package:http/http.dart' as http;
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 
 
+class Data {
+  bool response;
+  String name_firstname;
+
+  Data({required this.response, required this.name_firstname});
+}
+
+
 chercherCookie(connect) {
   var setCookieHeader = connect.headers['set-cookie'];
   dynamic phpSessid = setCookieHeader.split(';')[0];
@@ -66,9 +74,21 @@ Future authentication(String username, String password) async {
   var soup = BeautifulSoup(protected.body);
   var carte = soup.find('a', attrs: {'href': 'etudiant/absences'});
   if (carte != null) {
-    return true;
+    Data getData() {
+      bool response = true;
+      var name_firstname = soup.find('span', attrs: {'class': 'username username-hide-on-mobile'});
+      return Data(response: response, name_firstname: name_firstname!.text);
+    }
+    return getData();
   } else {
-    return false;
+    Data getData() {
+      bool response = false;
+      var name_firstname = 'null';
+      return Data(response: response, name_firstname: name_firstname);
+    }
+    return getData();
   }
+
+
 
 }

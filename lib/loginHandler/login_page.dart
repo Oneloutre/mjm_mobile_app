@@ -56,12 +56,16 @@ class _LoginPageState extends State<LoginPage> {
                   String username = _usernameController.text;
                   String password = _passwordController.text;
 
-                  var connected = await connection.authentication(username, password);
+
+                  connection.Data Connection_Result = await connection.authentication(username, password);
+                  var connected = Connection_Result.response;
+                  var name_firstname = Connection_Result.name_firstname;
 
                   if (connected == true) {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.setString('username', username);
                     prefs.setBool('_isLoggedIn', true);
+                    prefs.setString('name_firstname', name_firstname);
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => const home.HomePage()),
